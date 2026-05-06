@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>NOZ · Étiquettes P854</title>
+<title>NOZ · Saint-Soupplets</title>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 <style>
@@ -425,7 +425,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 
   <div class="nav-header">
     <span class="nav-title" id="nav-title">Saisie</span>
-    <span class="nav-badge">P854</span>
+    <span class="nav-badge">P391</span>
   </div>
 
   <div class="pages">
@@ -1273,7 +1273,7 @@ async function generatePNG(type) {
   const dataURL=canvas.toDataURL('image/png');
   const nomFich=type==='serie'?'Serie_Chaussures':'Etiquettes_Articles';
   const ds=new Date().toLocaleDateString('fr-FR').replace(/\//g,'');
-  const fname=`${nomFich}_NOZ_P854_${ds}.png`;
+  const fname=`${nomFich}_NOZ_Saint-Soupplets_${ds}.png`;
   const imgOutId=type==='serie'?'img-out-serie':'img-out-normal';
   const imgWrapId=type==='serie'?'img-wrap-serie':'img-wrap-normal';
   const imgInfoId=type==='serie'?'img-info-serie':'img-info-normal';
@@ -1319,7 +1319,7 @@ async function sauvegarderDansPhotos(type) {
     const ctx = canvas.getContext('2d');
     dessinerEtiquette(ctx, a, 0, 0, LW, LH, bcMap[a.ref] || null, PX);
     const dataURL = canvas.toDataURL('image/png');
-    const fname = `NOZ_P854_${esc(a.ref)}_${String(i+1).padStart(2,'0')}_${ds}.png`;
+    const fname = `NOZ_P391_${esc(a.ref)}_${String(i+1).padStart(2,'0')}_${ds}.png`;
 
     const link = document.createElement('a');
     link.href = dataURL;
@@ -2036,7 +2036,7 @@ window.casseFirebaseCopier = function() {
     const data = snapshot.val();
     if(!data) { showToast('Aucun box à copier'); return; }
     const items = Object.values(data);
-    const texte = `Box Cassés — NOZ P854\n${new Date().toLocaleDateString('fr-FR')}\n\n`
+    const texte = `Box Cassés — NOZ Saint-Soupplets\n${new Date().toLocaleDateString('fr-FR')}\n\n`
       + items.map((b,i) => `${i+1}. ${b.code}  (${b.date})`).join('\n')
       + `\n\nTotal : ${items.length} box`;
     navigator.clipboard.writeText(texte)

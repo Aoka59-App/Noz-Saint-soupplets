@@ -1,7 +1,7 @@
 {
-  "name": "NOZ Étiquettes P854",
-  "short_name": "NOZ Étiq.",
-  "description": "Générateur d'étiquettes thermiques NOZ P854 Louvroil",
+  "name": "NOZ Saint-Soupplets",
+  "short_name": "NOZ P391",
+  "description": "Générateur d'étiquettes thermiques NOZ Saint-Soupplets",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
