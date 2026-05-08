@@ -271,6 +271,43 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 @keyframes sp { to { transform:rotate(360deg); } }
 #render-canvas { display:none; }
 
+/* ── COMMANDE — formulaire ── */
+.cmd-order-form { background:var(--card); border-radius:14px; padding:14px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px; }
+.cmd-order-form > input { background:var(--bg); border:1.5px solid var(--sep); border-radius:10px; padding:11px 13px; font-size:16px; font-weight:600; color:var(--text); width:100%; }
+.cmd-order-form > input::placeholder { color:var(--text3); font-weight:400; }
+.cmd-form-lines { display:flex; flex-direction:column; gap:6px; }
+.cmd-form-line { display:flex; gap:6px; align-items:center; background:var(--bg); border-radius:10px; padding:7px 8px; }
+.cmd-fl-code { width:100px; flex-shrink:0; background:var(--card); border:1.5px solid var(--sep); border-radius:8px; padding:7px 9px; font-size:14px; color:var(--text); font-family:monospace; }
+.cmd-fl-label { flex:1; min-width:0; background:var(--card); border:1.5px solid var(--sep); border-radius:8px; padding:7px 9px; font-size:14px; color:var(--text); }
+.cmd-fl-code::placeholder, .cmd-fl-label::placeholder { color:var(--text3); }
+.cmd-qty-ctrl { display:flex; align-items:center; background:var(--card); border-radius:8px; border:1.5px solid var(--sep); overflow:hidden; flex-shrink:0; }
+.cmd-qty-ctrl button { background:none; border:none; width:28px; height:32px; font-size:17px; cursor:pointer; color:var(--text); font-weight:700; line-height:1; }
+.cmd-qty-ctrl button:active { background:var(--bg); }
+.cmd-qty-val { font-size:14px; font-weight:700; min-width:22px; text-align:center; color:var(--text); }
+.cmd-form-del { background:none; border:none; width:26px; height:26px; font-size:20px; cursor:pointer; color:var(--text3); flex-shrink:0; padding:0; }
+.cmd-form-del:active { color:var(--red); }
+/* ── COMMANDE — liste des commandes ── */
+.cmd-badge { display:inline-block; background:var(--accent); color:#fff; border-radius:20px; font-size:12px; font-weight:700; padding:2px 10px; margin-left:8px; vertical-align:middle; }
+.cmd-section-hdr { font-size:11px; font-weight:700; letter-spacing:.8px; color:var(--text3); text-transform:uppercase; margin:14px 0 8px; }
+.cmd-order-card { background:var(--card); border-radius:14px; margin-bottom:8px; overflow:hidden; }
+.cmd-order-hdr { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; gap:10px; user-select:none; }
+.cmd-order-hdr:active { background:var(--bg); }
+.cmd-order-name { font-size:17px; font-weight:700; color:var(--text); }
+.cmd-order-meta { font-size:12px; color:var(--text3); margin-top:2px; }
+.cmd-order-del { background:none; border:none; width:28px; height:28px; border-radius:50%; font-size:18px; cursor:pointer; color:var(--text3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cmd-order-del:active { background:var(--red); color:#fff; }
+.cmd-chevron { width:18px; height:18px; color:var(--text3); flex-shrink:0; transition:transform .2s; }
+.cmd-chevron.open { transform:rotate(180deg); }
+.cmd-order-items { border-top:0.5px solid var(--sep); }
+.cmd-order-item { display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; border-bottom:0.5px solid var(--sep); }
+.cmd-order-item:last-child { border-bottom:none; }
+.cmd-order-item:active { background:var(--bg); }
+.cmd-qty-pill { background:var(--accent); color:var(--accent2); font-size:12px; font-weight:800; border-radius:20px; padding:3px 8px; flex-shrink:0; min-width:30px; text-align:center; }
+.cmd-order-item-info { flex:1; min-width:0; }
+.cmd-order-item-label { font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cmd-order-item-code { font-size:12px; color:var(--text3); font-family:monospace; margin-top:1px; }
+.cmd-bc-icon { color:var(--text3); flex-shrink:0; }
+
 /* ── MODALE AJOUT LEXIQUE DEPUIS SAISIE ── */
 #lex-save-modal { position:fixed; inset:0; z-index:9997; background:rgba(0,0,0,.6); display:none; align-items:flex-end; justify-content:center; padding-bottom:var(--safe-bot); }
 #lex-save-modal.open { display:flex; }
@@ -898,6 +935,35 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 
     </div>
 
+    <!-- ══ COMMANDE ══ -->
+    <div class="page" id="page-commande">
+
+      <!-- Statut sync -->
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;">
+        <div id="cmd-sync-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .4s;"></div>
+        <span style="font-size:12px;color:var(--text3);">Commandes partagées en temps réel</span>
+      </div>
+
+      <!-- Formulaire nouvelle commande -->
+      <div class="cmd-section-hdr">Nouvelle commande</div>
+      <div class="cmd-order-form">
+        <input id="cmd-inp-name" type="text" placeholder="Nom de la personne" autocomplete="off"/>
+        <div class="cmd-form-lines" id="cmd-form-lines"></div>
+        <button class="btn-ios outline" style="margin:0;font-size:14px;padding:10px;" onclick="cmdFormAjouterLigne()">+ Ajouter un produit</button>
+        <button class="btn-ios" style="margin:0;" onclick="cmdValiderOrdre()">✓ Valider la commande</button>
+      </div>
+
+      <!-- Liste des commandes -->
+      <div class="cmd-section-hdr">Commandes en attente <span id="cmd-count-badge" class="cmd-badge" style="display:none;">0</span></div>
+      <div id="cmd-orders-list">
+        <p class="empty-state">Aucune commande</p>
+      </div>
+
+      <!-- Vider -->
+      <button class="btn-ios outline" style="margin-top:6px;" onclick="cmdVider()">🗑 Vider tout</button>
+
+    </div>
+
     <!-- ══ LEXIQUE ══ -->
     <div class="page" id="page-lexique">
 
@@ -997,6 +1063,14 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       </svg>
       <span class="tb-label">Caisse</span>
     </button>
+    <button class="tb-item" id="tb-commande" onclick="showTabById('commande')">
+      <svg class="tb-icon" viewBox="0 0 26 26" fill="none">
+        <path d="M4 5h2l2.5 11h10l2-7H8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="11" cy="20" r="1.5" fill="currentColor"/>
+        <circle cx="18" cy="20" r="1.5" fill="currentColor"/>
+      </svg>
+      <span class="tb-label">Commande</span>
+    </button>
     <button class="tb-item" id="tb-lexique" onclick="showTabById('lexique')">
       <svg class="tb-icon" viewBox="0 0 26 26" fill="none">
         <rect x="4" y="3" width="14" height="20" rx="2" stroke="currentColor" stroke-width="1.8"/>
@@ -1093,7 +1167,7 @@ renderAll();
 function save() { localStorage.setItem('noz-articles', JSON.stringify(articles)); }
 
 // ── Navigation tabs ──
-const TAB_TITLES = { saisie:'Saisie', liste:'Articles & Aperçu', rvn:'Box Casse', comptage:'Comptage', calcul:'Calcul %', caisse:'Caisse', lexique:'Lexique' };
+const TAB_TITLES = { saisie:'Saisie', liste:'Articles & Aperçu', rvn:'Box Casse', comptage:'Comptage', calcul:'Calcul %', caisse:'Caisse', commande:'Commande', lexique:'Lexique' };
 
 function showTabById(name) {
   // Couper la caméra si on quitte le scanner
@@ -1107,6 +1181,7 @@ function showTabById(name) {
   document.getElementById('nav-title').textContent = TAB_TITLES[name] || name;
   if(name==='liste') renderPreview();
   if(name==='lexique') lexiqueRendre();
+  if(name==='commande') { cmdRendre(); cmdFormRendre(); }
   stopScan();
   stopScanSaisie();
 }
@@ -2118,6 +2193,167 @@ let _lexData = (function(){
   try { const d = JSON.parse(localStorage.getItem(LEX_KEY)||'{}'); LEX_CATS.forEach(c=>{ if(!d[c]) d[c]=[]; }); return d; } catch(e) { const d={}; LEX_CATS.forEach(c=>d[c]=[]); return d; }
 })();
 
+// ── COMMANDE ──
+let _cmdOrders  = [];
+let _cmdFormLines = [{ label:'', code:'', qty:1 }];
+
+function cmdFormRendre() {
+  const c = document.getElementById('cmd-form-lines');
+  if(!c) return;
+  c.innerHTML = _cmdFormLines.map((l, i) => `
+    <div class="cmd-form-line">
+      <input class="cmd-fl-code" type="text" inputmode="numeric" placeholder="Code" value="${esc(l.code)}"
+        oninput="_cmdFormLines[${i}].code=this.value"/>
+      <input class="cmd-fl-label" type="text" placeholder="Désignation" value="${esc(l.label)}"
+        oninput="_cmdFormLines[${i}].label=this.value"/>
+      <div class="cmd-qty-ctrl">
+        <button onclick="cmdFormQty(${i},-1)">−</button>
+        <span class="cmd-qty-val">${l.qty}</span>
+        <button onclick="cmdFormQty(${i},1)">+</button>
+      </div>
+      <button class="cmd-form-del" onclick="cmdFormSupprimerLigne(${i})">×</button>
+    </div>`).join('');
+}
+
+function cmdFormAjouterLigne() {
+  _cmdFormLines.push({ label:'', code:'', qty:1 });
+  cmdFormRendre();
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('#cmd-form-lines .cmd-fl-code');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+}
+
+function cmdFormSupprimerLigne(i) {
+  _cmdFormLines.splice(i, 1);
+  if(!_cmdFormLines.length) _cmdFormLines.push({ label:'', code:'', qty:1 });
+  cmdFormRendre();
+}
+
+function cmdFormQty(i, delta) {
+  _cmdFormLines[i].qty = Math.max(1, (_cmdFormLines[i].qty||1) + delta);
+  const vals = document.querySelectorAll('#cmd-form-lines .cmd-qty-val');
+  if(vals[i]) vals[i].textContent = _cmdFormLines[i].qty;
+}
+
+function cmdValiderOrdre() {
+  const name  = (document.getElementById('cmd-inp-name').value.trim()) || 'Sans nom';
+  const items = _cmdFormLines.filter(l => l.label || l.code).map(l => ({ label:l.label, code:l.code, qty:l.qty }));
+  if(!items.length) { showToast('Ajoute au moins un produit'); return; }
+  _cmdOrders.push({ name, items });
+  document.getElementById('cmd-inp-name').value = '';
+  _cmdFormLines = [{ label:'', code:'', qty:1 }];
+  cmdFormRendre();
+  cmdRendre();
+  if(window.cmdFirebaseEnvoyer) window.cmdFirebaseEnvoyer(_cmdOrders);
+  showToast('Commande de ' + name + ' ajoutée ✓');
+}
+
+function cmdRendre() {
+  const list  = document.getElementById('cmd-orders-list');
+  const badge = document.getElementById('cmd-count-badge');
+  badge.textContent = _cmdOrders.length;
+  badge.style.display = _cmdOrders.length ? '' : 'none';
+  if(!_cmdOrders.length) { list.innerHTML = '<p class="empty-state">Aucune commande</p>'; return; }
+  list.innerHTML = _cmdOrders.map((ord, i) => {
+    const nameEsc = esc(ord.name);
+    const count   = ord.items.length;
+    return `<div class="cmd-order-card">
+      <div class="cmd-order-hdr" onclick="cmdToggle(${i})">
+        <div style="flex:1;min-width:0;">
+          <div class="cmd-order-name">${nameEsc}</div>
+          <div class="cmd-order-meta">${count} article${count>1?'s':''}</div>
+        </div>
+        <button class="cmd-order-del" onclick="event.stopPropagation();cmdSupprimerOrdre(${i})">×</button>
+        <svg class="cmd-chevron" id="cmd-chev-${i}" viewBox="0 0 20 20" fill="none">
+          <polyline points="4,7 10,13 16,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="cmd-order-items" id="cmd-ord-${i}" style="display:none;">
+        ${ord.items.map((it, j) => `
+          <div class="cmd-order-item" onclick="cmdOuvrirBarcode(${i},${j})">
+            <span class="cmd-qty-pill">×${it.qty||1}</span>
+            <div class="cmd-order-item-info">
+              ${it.label ? `<div class="cmd-order-item-label">${esc(it.label)}</div>` : ''}
+              ${it.code  ? `<div class="cmd-order-item-code">${esc(it.code)}</div>` : ''}
+            </div>
+            <svg class="cmd-bc-icon" viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <rect x="2" y="3" width="3" height="18" rx="1" fill="currentColor"/>
+              <rect x="7" y="3" width="1.5" height="18" rx=".5" fill="currentColor"/>
+              <rect x="10.5" y="3" width="3" height="18" rx="1" fill="currentColor"/>
+              <rect x="15.5" y="3" width="1.5" height="18" rx=".5" fill="currentColor"/>
+              <rect x="19" y="3" width="3" height="18" rx="1" fill="currentColor"/>
+            </svg>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cmdToggle(i) {
+  const panel = document.getElementById('cmd-ord-' + i);
+  const chev  = document.getElementById('cmd-chev-' + i);
+  if(!panel) return;
+  const open = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : 'block';
+  if(chev) chev.classList.toggle('open', !open);
+}
+
+function cmdSupprimerOrdre(i) {
+  _cmdOrders.splice(i, 1);
+  cmdRendre();
+  if(_cmdOrders.length) { if(window.cmdFirebaseEnvoyer) window.cmdFirebaseEnvoyer(_cmdOrders); }
+  else { if(window.cmdFirebaseVider) window.cmdFirebaseVider(); }
+}
+
+function cmdVider() {
+  if(_cmdOrders.length && !confirm('Vider toutes les commandes ?')) return;
+  _cmdOrders = [];
+  cmdRendre();
+  if(window.cmdFirebaseVider) window.cmdFirebaseVider();
+}
+
+function cmdOuvrirBarcode(i, j) {
+  const ord = _cmdOrders[i];
+  if(!ord) return;
+  const it = ord.items[j];
+  if(!it) return;
+  document.getElementById('lex-bc-modal-label').textContent = ord.name + (it.label ? ' — ' + it.label : '');
+  document.getElementById('lex-bc-modal-code').textContent  = it.code || '';
+  const priceEl = document.getElementById('lex-bc-modal-price');
+  priceEl.textContent = 'Quantité : ' + (it.qty||1);
+  priceEl.style.display = '';
+  const svgEl = document.getElementById('lex-bc-modal-barcode');
+  svgEl.removeAttribute('data-jbarcode-done');
+  if(it.code && it.code.trim()) {
+    try {
+      let fmt, val = it.code.trim();
+      if(/^\d{13}$/.test(val)) fmt='EAN13'; else if(/^\d{8}$/.test(val)) fmt='EAN8'; else fmt='CODE128';
+      JsBarcode(svgEl, val, { format:fmt, width:2.2, height:90, displayValue:true, margin:8, fontSize:14, textMargin:6 });
+      svgEl.parentElement.style.display = '';
+    } catch(e) { svgEl.parentElement.style.display='none'; }
+  } else { svgEl.parentElement.style.display='none'; }
+  document.getElementById('lex-bc-modal').classList.add('open');
+}
+
+// Mise à jour Firebase → rendu
+window.cmdFirebaseUpdate = function(data) {
+  let orders = data;
+  if(!orders) { _cmdOrders = []; }
+  else {
+    if(!Array.isArray(orders)) orders = Object.values(orders);
+    _cmdOrders = orders.map(ord => ({
+      name: ord.name || '',
+      items: Array.isArray(ord.items) ? ord.items : Object.values(ord.items||{})
+    }));
+  }
+  if(document.getElementById('page-commande').classList.contains('active')) cmdRendre();
+  const dot = document.getElementById('cmd-sync-dot');
+  if(dot) dot.style.background = '#34c759';
+};
+
+document.addEventListener('DOMContentLoaded', () => { cmdFormRendre(); });
+
 // ── SAUVEGARDER ARTICLE DANS LEXIQUE ──
 let _lexSaveCode = '';
 let _lexSavePrice = '';
@@ -2454,6 +2690,23 @@ window.caisseFromScan = function(code) {
     .then(() => { showToast('Envoyé à la caisse !'); bipScan(); })
     .catch(() => showToast('Erreur Firebase'));
 };
+
+// ── SYNC COMMANDE ──
+const cmdRef = ref(db, 'commande_p391');
+
+window.cmdFirebaseEnvoyer = (items) => set(cmdRef, items)
+  .then(() => showToast('Commande envoyée ✓'))
+  .catch(() => showToast('Erreur envoi commande'));
+
+window.cmdFirebaseVider = () => remove(cmdRef)
+  .catch(() => showToast('Erreur suppression commande'));
+
+onValue(cmdRef, snapshot => {
+  const data = snapshot.val();
+  if(window.cmdFirebaseUpdate) window.cmdFirebaseUpdate(data || []);
+  const dot = document.getElementById('cmd-sync-dot');
+  if(dot) dot.style.background = '#34c759';
+});
 </script>
 
 <script>
